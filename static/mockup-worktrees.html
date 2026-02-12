@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worktree Grouping — Visual Options</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ---- Inherit the dashboard design tokens exactly ---- */
+    :root {
+      --bg-deep: #0a0a0b;
+      --bg-primary: #0f0f10;
+      --bg-secondary: #151517;
+      --bg-tertiary: #1a1a1d;
+      --bg-elevated: #202024;
+      --bg-hover: #28282d;
+      --border-subtle: #252528;
+      --border-default: #333338;
+      --border-strong: #444449;
+      --text-primary: #fafaf9;
+      --text-secondary: #a8a8a3;
+      --text-muted: #6b6b66;
+      --text-faint: #454542;
+      --accent: #f59e0b;
+      --accent-bright: #fbbf24;
+      --accent-dim: #b45309;
+      --accent-glow: rgba(245, 158, 11, 0.15);
+      --accent-glow-strong: rgba(245, 158, 11, 0.25);
+      --success: #22c55e;
+      --success-dim: #15803d;
+      --error: #ef4444;
+      --error-dim: #991b1b;
+      --info: #3b82f6;
+      --info-dim: #1e40af;
+      --warning: #eab308;
+      --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, 'Liberation Mono', monospace;
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    /* ---- Page layout ---- */
+    .mockup-page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px 80px;
+    }
+
+    .mockup-header {
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    .mockup-header h1 {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .mockup-header p {
+      font-size: 12px;
+      color: var(--text-muted);
+      max-width: 640px;
+      line-height: 1.7;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-bottom: 16px;
+      transition: color 0.15s;
+    }
+
+    .back-link:hover { color: var(--accent-bright); }
+
+    .back-link svg { width: 12px; height: 12px; }
+
+    /* ---- Option sections ---- */
+    .option-section {
+      margin-bottom: 48px;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .option-letter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: var(--accent-glow);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 6px;
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent-bright);
+      flex-shrink: 0;
+    }
+
+    .option-title {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .option-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      margin-left: 40px;
+      line-height: 1.7;
+    }
+
+    /* ---- Shared table styles (mirroring dashboard exactly) ---- */
+    .demo-table-wrap {
+      border: 1px solid var(--border-default);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    table.demo {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    table.demo th {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-default);
+      padding: 8px 12px;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .col-repo   { width: 26%; }
+    .col-branch { width: 20%; }
+    .col-status { width: 11%; }
+    .col-changes { width: 11%; }
+    .col-prs    { width: 10%; }
+    .col-commit { width: 14%; }
+    .col-stale  { width: 8%; }
+
+    /* Category header */
+    tr.cat-hdr {
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    tr.cat-hdr td {
+      padding: 6px 12px;
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .cat-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cat-chevron {
+      width: 12px;
+      height: 12px;
+      color: var(--text-muted);
+    }
+
+    .cat-count {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-left: 4px;
+    }
+
+    /* Normal repo rows */
+    tr.repo {
+      border-bottom: 1px solid var(--border-subtle);
+      transition: background 0.15s;
+    }
+
+    tr.repo:hover { background: var(--bg-hover); }
+
+    tr.repo td {
+      padding: 7px 12px;
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .repo-name {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .branch { font-size: 12px; }
+    .branch.is-default { color: var(--text-muted); }
+    .branch.is-feature { color: var(--info); }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .sdot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .status.is-clean       { color: var(--success); }
+    .status.is-clean .sdot { background: var(--success); box-shadow: 0 0 6px rgba(34, 197, 94, 0.4); }
+    .status.is-dirty       { color: var(--warning); }
+    .status.is-dirty .sdot { background: var(--warning); box-shadow: 0 0 6px rgba(234, 179, 8, 0.4); }
+    .status.is-ahead       { color: var(--info); }
+    .status.is-ahead .sdot { background: var(--info); box-shadow: 0 0 6px rgba(59, 130, 246, 0.4); }
+
+    .chg-none { color: var(--text-faint); }
+    .chg-ins  { color: var(--success); font-size: 12px; }
+    .chg-del  { color: var(--error); font-size: 12px; }
+
+    .pr-none { color: var(--text-faint); font-size: 12px; }
+
+    .pr-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      background: var(--info-dim);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--info);
+    }
+
+    .commit-time { color: var(--text-secondary); font-size: 12px; }
+    .commit-time.is-stale { color: var(--text-muted); }
+
+    .stale-zero { color: var(--text-faint); font-size: 12px; }
+    .stale-some { color: var(--warning); font-size: 12px; font-weight: 500; }
+
+    /* ---- Worktree badge (shared across options) ---- */
+    .wt-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 1px 6px;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.18);
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--accent);
+      margin-left: 6px;
+      vertical-align: middle;
+      letter-spacing: 0.02em;
+    }
+
+    .wt-badge svg {
+      width: 10px;
+      height: 10px;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+       OPTION A — Indented sub-rows with tree connectors
+       ============================================================ */
+
+    tr.wt-row-a td {
+      padding: 5px 12px;
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    tr.wt-row-a {
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-subtle);
+      transition: background 0.15s;
+    }
+
+    tr.wt-row-a:hover { background: var(--bg-tertiary); }
+
+    .wt-indent {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    .wt-connector {
+      color: var(--text-faint);
+      font-size: 12px;
+      margin-right: 6px;
+      flex-shrink: 0;
+      user-select: none;
+      /* Use a consistent width so names align */
+      display: inline-block;
+      width: 36px;
+      text-align: right;
+    }
+
+    .wt-name {
+      color: var(--text-secondary);
+      font-weight: 400;
+      font-size: 12px;
+    }
+
+    tr.wt-row-a .branch { opacity: 0.75; }
+    tr.wt-row-a .status { opacity: 0.75; }
+    tr.wt-row-a .commit-time { opacity: 0.65; }
+
+    /* Last worktree in a group gets └── instead of ├── */
+
+    /* ============================================================
+       OPTION B — Expandable accordion (click to toggle)
+       ============================================================ */
+
+    tr.wt-detail-b {
+      display: none;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    tr.wt-detail-b.is-expanded {
+      display: table-row;
+    }
+
+    tr.wt-detail-b td {
+      padding: 0 12px 0 32px;
+    }
+
+    .wt-detail-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .wt-detail-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 12px;
+    }
+
+    .wt-detail-item:last-child {
+      border-bottom: none;
+    }
+
+    .wt-detail-name {
+      color: var(--text-secondary);
+      font-weight: 400;
+      min-width: 120px;
+    }
+
+    .wt-detail-branch {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 10px;
+      color: var(--info);
+    }
+
+    .wt-detail-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+    }
+
+    .wt-detail-status .sdot {
+      width: 5px;
+      height: 5px;
+    }
+
+    .wt-detail-commit {
+      color: var(--text-muted);
+      font-size: 11px;
+      margin-left: auto;
+    }
+
+    .wt-badge-click {
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .wt-badge-click:hover {
+      background: rgba(245, 158, 11, 0.16);
+      border-color: rgba(245, 158, 11, 0.35);
+    }
+
+    /* ============================================================
+       OPTION C — Inline compact chips
+       ============================================================ */
+
+    .wt-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .wt-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      font-size: 10px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      transition: border-color 0.15s;
+    }
+
+    .wt-chip:hover {
+      border-color: var(--border-default);
+    }
+
+    .wt-chip-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .wt-chip-dot.is-clean   { background: var(--success); box-shadow: 0 0 4px rgba(34, 197, 94, 0.3); }
+    .wt-chip-dot.is-dirty   { background: var(--warning); box-shadow: 0 0 4px rgba(234, 179, 8, 0.3); }
+    .wt-chip-dot.is-ahead   { background: var(--info);    box-shadow: 0 0 4px rgba(59, 130, 246, 0.3); }
+
+    .wt-chip-branch {
+      color: var(--info);
+      font-weight: 400;
+    }
+
+    /* For option C, the repo name cell needs to allow wrapping */
+    .repo-name-c {
+      white-space: normal !important;
+    }
+
+    /* ---- Annotation callout ---- */
+    .annotation {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-top: 12px;
+      margin-left: 40px;
+      padding: 10px 14px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-dim);
+      border-radius: 0 6px 6px 0;
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .annotation strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .annotation-icon {
+      color: var(--accent);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .pros-cons {
+      display: flex;
+      gap: 24px;
+      margin-top: 6px;
+    }
+
+    .pros-cons ul {
+      list-style: none;
+      font-size: 10px;
+    }
+
+    .pros-cons li { padding: 1px 0; }
+    .pros-cons li::before { margin-right: 4px; }
+    .pro li::before { content: '+'; color: var(--success); font-weight: 600; }
+    .con li::before { content: '-'; color: var(--error); font-weight: 600; }
+
+    /* Worktree fork icon SVG */
+    .wt-icon {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="mockup-page">
+
+  <a href="/" class="back-link">
+    <svg viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Back to dashboard
+  </a>
+
+  <div class="mockup-header">
+    <h1>Worktree Grouping — Visual Options</h1>
+    <p>
+      4 repos have worktrees checked out as sibling directories. Currently they appear as flat, unrelated rows.
+      These three options show different ways to visually group worktrees under their parent repo.
+      Pick the one that feels right for your workflow.
+    </p>
+  </div>
+
+  <!-- ================================================================
+       OPTION A — Indented sub-rows
+       ================================================================ -->
+  <div class="option-section">
+    <div class="option-label">
+      <span class="option-letter">A</span>
+      <span class="option-title">Indented Sub-Rows</span>
+    </div>
+    <p class="option-desc">
+      Worktree rows appear directly below their parent, indented with tree connectors (<code>├──</code> / <code>└──</code>).
+      Slightly dimmer text. Parent gets a small worktree count badge.
+    </p>
+    <div class="demo-table-wrap">
+      <table class="demo">
+        <thead>
+          <tr>
+            <th class="col-repo">Repo</th>
+            <th class="col-branch">Branch</th>
+            <th class="col-status">Status</th>
+            <th class="col-changes">Changes</th>
+            <th class="col-prs">PRs</th>
+            <th class="col-commit">Last Commit</th>
+            <th class="col-stale">Stale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="cat-hdr">
+            <td colspan="7">
+              <span class="cat-label">
+                <svg class="cat-chevron" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                utilities
+                <span class="cat-count">8</span>
+              </span>
+            </td>
+          </tr>
+
+          <!-- athena — parent with 1 worktree -->
+          <tr class="repo">
+            <td class="col-repo">
+              <span class="repo-name">athena-usage-monitor-fastapi</span>
+              <span class="wt-badge">
+                <svg class="wt-icon" viewBox="0 0 16 16" fill="none"><path d="M6 3v4.5c0 .83.67 1.5 1.5 1.5H12M6 3V13M6 3H4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                1
+              </span>
+            </td>
+            <td class="col-branch"><span class="branch is-default">main</span></td>
+            <td class="col-status"><span class="status is-clean"><span class="sdot"></span>Clean</span></td>
+            <td class="col-changes"><span class="chg-none">—</span></td>
+            <td class="col-prs"><span class="pr-none">—</span></td>
+            <td class="col-commit"><span class="commit-time">3d ago</span></td>
+            <td class="col-stale"><span class="stale-zero">—</span></td>
+          </tr>
+          <tr class="wt-row-a">
+            <td class="col-repo">
+              <div class="wt-indent">
+                <span class="wt-connector">└──</span>
+                <span class="wt-name">…-wt-dev-persona</span>
+              </div>
+            </td>
+            <td class="col-branch"><span class="branch is-feature">feat/dev-persona-auth</span></td>
+            <td class="col-status"><span class="status is-dirty"><span class="sdot"></span>Dirty</span></td>
+            <td class="col-changes"><span class="chg-ins">+42</span> <span class="chg-del">-8</span></td>
+            <td class="col-prs"><span class="pr-none">—</span></td>
+            <td class="col-commit"><span class="commit-time">2h ago</span></td>
+            <td class="col-stale"><span class="stale-zero">—</span></td>
+          </tr>
+
+          <!-- data-platform-assistant — normal repo, no worktrees -->
+          <tr class="repo">
+            <td class="col-repo"><span class="repo-name">data-platform-assistant</span></td>
+            <td class="col-branch"><span class="branch is-default">main</span></td>
+            <td class="col-status"><span class="status is-dirty"><span class="sdot"></span>Dirty</span></td>
+            <td class="col-changes"><span class="chg-ins">+12</span> <span class="chg-del">-3</span></td>
+            <td class="col-prs"><span class="pr-pill">2 PRs</span></td>
+            <td class="col-commit"><span class="commit-time">1h ago</span></td>
+            <td class="col-stale"><span class="stale-some">2</span></td>
+          </tr>
+
+          <!-- docs-site — parent with 1 worktree -->
+          <tr class="repo">
+            <td class="col-repo">
+              <span class="repo-name">docs-site</span>
+              <span class="wt-badge">
+                <svg class="wt-icon" viewBox="0 0 16 16" fill="none"><path d="M6 3v4.5c0 .83.67 1.5 1.5 1.5H12M6 3V13M6 3H4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                1
+              </span>
+            </td>
+            <td class="col-branch"><span class="branch is-default">main</span></td>
+            <td class="col-status"><span class="status is-clean"><span class="sdot"></span>Clean</span></td>
+            <td class="col-changes"><span class="chg-none">—</span></td>
+            <td class="col-prs"><span class="pr-none">—</span></td>
+            <td class="col-commit"><span class="commit-time">5d ago</span></td>
+            <td class="col-stale"><span class="stale-zero">—</span></td>
+          </tr>
+          <tr class="wt-row-a">
+            <td class="col-repo">
+              <div class="wt-indent">
+                <span class="wt-connector">└──</span>
+                <span class="wt-name">…--shared-markdown</span>
+              </div>
+            </td>
+            <td class="col-branch"><span class="branch is-feature">feature/shared-markdown-module</span></td>
+            <td class="col-status"><span class="status is-ahead"><span class="sdot"></span>Ahead</span></td>
+            <td class="col-changes"><span class="chg-ins">+156</span> <span class="chg-del">-22</span></td>
+            <td class="col-prs"><span class="pr-pill">1 PR</span></td>
+            <td class="col-commit"><span class="commit-time">4h ago</span></td>
+            <td class="col-stale"><span class="stale-zero">—</span></td>
+          </tr>
+
+          <!-- epcvip-tools-hub — parent with 1 worktree -->
+          <tr class="repo">
+            <td class="col-repo">
+              <span class="repo-name">epcvip-tools-hub</span>
+              <span class="wt-badge">
+                <svg class="wt-icon" viewBox="0 0 16 16" fill="none"><path d="M6 3v4.5c0 .83.67 1.5 1.5 1.5H12M6 3V13M6 3H4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                1
+              </span>
+            </td>
+            <td class="col-branch"><span class="branch is-default">main</span></td>
+            <td class="col-status"><span class="status is-clean"><span class="sdot"></span>Clean</span></td>
+            <td class="col-changes"><span class="chg-none">—</span></td>
+            <td class="col-prs"><span class="pr-none">—</span></td>
+            <td class="col-commit"><span class="commit-time">1d ago</span></td>
+            <td class="col-stale"><span class="stale-zero">—</span></td>
+          </tr>
+          <tr class="wt-row-a">
+            <td class="col-repo">
+              <div class="wt-indent">
+                <span class="wt-connector">└──</span>
+                <span class="wt-name">…--shared-markdown</span>
+              </div>
+            </td>
+            <td class="col-branch"><span class="branch is-feature">feature/epc-markdown-module</span></td>
+            <td class="col-status"><span class="status is-dirty"><span class="sdot"></span>Dirty</span></td>
+            <td class="col-changes"><span class="chg-ins">+89</span></td>
+            <td class="col-prs"><span class="pr-none">—</span></td>
+            <td class="col-commit"><span class="commit-time">6h ago</span></td>
+            <td class="col-stale"><span class="stale-zero">—</span></td>
+          </tr>
+
+          <!-- experiments-dashboard — parent with 1 worktree -->
+          <tr class="repo">
+            <td class="col-repo">
+              <span class="repo-name">experiments-dashboard</span>
+              <span class="wt-badge">
+                <svg class="wt-icon" viewBox="0 0 16 16" fill="none"><path d="M6 3v4.5c0 .83.67 1.5 1.5 1.5H12M6 3V13M6 3H4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                1
+              </span>
+            </td>
+            <td class="col-branch"><span class="branch is-default">main</span></td>
+            <td class="col-status"><span class="status is-clean"><span class="sdot"></span>Clean</span></td>
+            <td class="col-changes"><span class="chg-none">—</span></td>
+            <td class="col-prs"><span class="pr-pill">1 PR</span></td>
+            <td class="col-commit"><span class="commit-time">2d ago</span></td>
+            <td class="col-stale"><span class="stale-some">1</span></td>
+          </tr>
+          <tr class="wt-row-a">
+            <td class="col-repo">
+              <div class="wt-indent">
+                <span class="wt-connector">└──</span>
+                <span class="wt-name">…--shared-markdown</span>
+              </div>
+            </td>
+            <td class="col-branch"><span class="branch is-feature">feature/shared-markdown-module</span></td>
+            <td class="col-status"><span class="status is-clean"><span class="sdot"></span>Clean</span></td>
+            <td class="col-changes"><span class="chg-none">—</span></td>
+            <td class="col-prs"><span class="pr-none">—</span></td>
+            <td class="col-commit"><span class="commit-time">1d ago</span></td>
+            <td class="col-stale"><span class="stale-zero">—</span></td>
+          </tr>
+
+          <!-- ping-tree-compare — normal repo -->
+          <tr class="repo">
+            <td class="col-repo"><span class="repo-name">ping-tree-compare</span></td>
+            <td class="col-branch"><span class="branch is-default">main</span></td>
+            <td class="col-status"><span class="status is-clean"><span class="sdot"></span>Clean</span></td>
+            <td class="col-changes"><span class="chg-none">—</span></td>
+            <td class="col-prs"><span class="pr-none">—</span></td>
+            <td class="col-commit"><span class="commit-time is-stale">14d ago</span></td>
+            <td class="col-stale"><span class="stale-zero">—</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="annotation">
+      <svg class="annotation-icon" width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v3M8 10.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <div>
+        <strong>How it works:</strong> Worktrees always visible below their parent. Names are truncated with <code>…</code> prefix to save space.
+        Tree connector characters (<code>└──</code>) provide clear visual hierarchy. All columns remain scannable.
+        <div class="pros-cons">
+          <ul class="pro">
+            <li>Hierarchy immediately visible — no clicks needed</li>
+            <li>Full status info per worktree (branch, status, changes)</li>
+            <li>j/k navigation naturally flows through worktrees</li>
+          </ul>
+          <ul class="con">
+            <li>Takes more vertical space (extra row per worktree)</li>
+            <li>May feel cluttered if many worktrees exist</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       OPTION B — Expandable accordion
+       ================================================================ -->
+  <div class="option-section">
+    <div class="option-label">
+      <span class="option-letter">B</span>
+      <span class="option-title">Expandable Accordion</span>
+    </div>
+    <p class="option-desc">
+      Worktree count badge on parent row is clickable. Clicking expands a detail panel below (like the existing PR expansion pattern).
+      Shown here: <code>docs-site</code> expanded, <code>athena</code> collapsed.
+    </p>
+    <div class="demo-table-wrap">
+      <table class="demo" id="optionBTable">
+        <thead>
+          <tr>
+            <th class="col-repo">Repo</th>
+            <th class="col-branch">Branch</th>
+            <th class="col-status">Status</th>
+            <th class="col-changes">Changes</th>
+            <th class="col-prs">PRs</th>
+            <th class="col-commit">Last Commit</th>
+            <th class="col-stale">Stale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="cat-hdr">
+            <td colspan="7">
+              <span class="cat-label">
+                <svg class="cat-chevron" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                utilities
+                <span class="cat-count">8</span>
+              </span>
+            </td>
+          </tr>
+
+          <!-- athena — collapsed -->
+          <tr class="repo">
+            <td class="col-repo">
+              <span class="repo-name">athena-usage-monitor-fastapi</span>
+              <span class="wt-badge wt-badge-click" onclick="toggleWtDetail('athena')">
+                <svg class="wt-icon" viewBox="0 0 16 16" fill="none"><path d="M6 3v4.5c0 .83.67 1.5 1.5 1.5H12M6 3V13M6 3H4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                1
+              </span>
+            </td>
+            <td class="col-branch"><span class="branch is-default">main</span></td>
+            <td class="col-status"><span class="status is-clean"><span class="sdot"></span>Clean</span></td>
+            <td class="col-changes"><span class="chg-none">—</span></td>
+            <td class="col-prs"><span class="pr-none">—</span></td>
+            <td class="col-commit"><span class="commit-time">3d ago</span></td>
+            <td class="col-stale"><span class="stale-zero">—</span></td>
+          </tr>
+          <tr class="wt-detail-b" data-wt-for="athena">
+            <td colspan="7">
+              <div class="wt-detail-list">
+                <div class="wt-detail-item">
+                  <span class="wt-detail-name">…-wt-dev-persona</span>
+                  <span class="wt-detail-branch">feat/dev-persona-auth</span>
+                  <span class="wt-detail-status status is-dirty"><span class="sdot"></span>Dirty</span>
+                  <span class="chg-ins" style="font-size:11px">+42</span>
+                  <span class="chg-del" style="font-size:11px">-8</span>
+                  <span class="wt-detail-commit">2h ago</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- data-platform-assistant — normal -->
+          <tr class="repo">
+            <td class="col-repo"><span class="repo-name">data-platform-assistant</span></td>
+            <td class="col-branch"><span class="branch is-default">main</span></td>
+            <td class="col-status"><span class="status is-dirty"><span class="sdot"></span>Dirty</span></td>
+            <td class="col-changes"><span class="chg-ins">+12</span> <span class="chg-del">-3</span></td>
+            <td class="col-prs"><span class="pr-pill">2 PRs</span></td>
+            <td class="col-commit"><span class="commit-time">1h ago</span></td>
+            <td class="col-stale"><span class="stale-some">2</span></td>
+          </tr>
+
+          <!-- docs-site — expanded -->
+          <tr class="repo">
+            <td class="col-repo">
+              <span class="repo-name">docs-site</span>
+              <span class="wt-badge wt-badge-click" onclick="toggleWtDetail('docs-site')" style="background: rgba(245, 158, 11, 0.16); border-color: rgba(245, 158, 11, 0.35);">
+                <svg class="wt-icon" viewBox="0 0 16 16" fill="none"><path d="M6 3v4.5c0 .83.67 1.5 1.5 1.5H12M6 3V13M6 3H4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                1
+              </span>
+            </td>
+            <td class="col-branch"><span class="branch is-default">main</span></td>
+            <td class="col-status"><span class="status is-clean"><span class="sdot"></span>Clean</span></td>
+            <td class="col-changes"><span class="chg-none">—</span></td>
+            <td class="col-prs"><span class="pr-none">—</span></td>
+            <td class="col-commit"><span class="commit-time">5d ago</span></td>
+            <td class="col-stale"><span class="stale-zero">—</span></td>
+          </tr>
+          <tr class="wt-detail-b is-expanded" data-wt-for="docs-site">
+            <td colspan="7">
+              <div class="wt-detail-list">
+                <div class="wt-detail-item">
+                  <span class="wt-detail-name">…--shared-markdown</span>
+                  <span class="wt-detail-branch">feature/shared-markdown-module</span>
+                  <span class="wt-detail-status status is-ahead"><span class="sdot"></span>Ahead</span>
+                  <span class="chg-ins" style="font-size:11px">+156</span>
+                  <span class="chg-del" style="font-size:11px">-22</span>
+                  <span class="wt-detail-commit">4h ago</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- epcvip-tools-hub — collapsed -->
+          <tr class="repo">
+            <td class="col-repo">
+              <span class="repo-name">epcvip-tools-hub</span>
+              <span class="wt-badge wt-badge-click" onclick="toggleWtDetail('tools-hub')">
+                <svg class="wt-icon" viewBox="0 0 16 16" fill="none"><path d="M6 3v4.5c0 .83.67 1.5 1.5 1.5H12M6 3V13M6 3H4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                1
+              </span>
+            </td>
+            <td class="col-branch"><span class="branch is-default">main</span></td>
+            <td class="col-status"><span class="status is-clean"><span class="sdot"></span>Clean</span></td>
+            <td class="col-changes"><span class="chg-none">—</span></td>
+            <td class="col-prs"><span class="pr-none">—</span></td>
+            <td class="col-commit"><span class="commit-time">1d ago</span></td>
+            <td class="col-stale"><span class="stale-zero">—</span></td>
+          </tr>
+          <tr class="wt-detail-b" data-wt-for="tools-hub">
+            <td colspan="7">
+              <div class="wt-detail-list">
+                <div class="wt-detail-item">
+                  <span class="wt-detail-name">…--shared-markdown</span>
+                  <span class="wt-detail-branch">feature/epc-markdown-module</span>
+                  <span class="wt-detail-status status is-dirty"><span class="sdot"></span>Dirty</span>
+                  <span class="chg-ins" style="font-size:11px">+89</span>
+                  <span class="wt-detail-commit">6h ago</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- experiments-dashboard — collapsed -->
+          <tr class="repo">
+            <td class="col-repo">
+              <span class="repo-name">experiments-dashboard</span>
+              <span class="wt-badge wt-badge-click" onclick="toggleWtDetail('exp-dash')">
+                <svg class="wt-icon" viewBox="0 0 16 16" fill="none"><path d="M6 3v4.5c0 .83.67 1.5 1.5 1.5H12M6 3V13M6 3H4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                1
+              </span>
+            </td>
+            <td class="col-branch"><span class="branch is-default">main</span></td>
+            <td class="col-status"><span class="status is-clean"><span class="sdot"></span>Clean</span></td>
+            <td class="col-changes"><span class="chg-none">—</span></td>
+            <td class="col-prs"><span class="pr-pill">1 PR</span></td>
+            <td class="col-commit"><span class="commit-time">2d ago</span></td>
+            <td class="col-stale"><span class="stale-some">1</span></td>
+          </tr>
+          <tr class="wt-detail-b" data-wt-for="exp-dash">
+            <td colspan="7">
+              <div class="wt-detail-list">
+                <div class="wt-detail-item">
+                  <span class="wt-detail-name">…--shared-markdown</span>
+                  <span class="wt-detail-branch">feature/shared-markdown-module</span>
+                  <span class="wt-detail-status status is-clean"><span class="sdot"></span>Clean</span>
+                  <span class="wt-detail-commit">1d ago</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- ping-tree-compare — normal -->
+          <tr class="repo">
+            <td class="col-repo"><span class="repo-name">ping-tree-compare</span></td>
+            <td class="col-branch"><span class="branch is-default">main</span></td>
+            <td class="col-status"><span class="status is-clean"><span class="sdot"></span>Clean</span></td>
+            <td class="col-changes"><span class="chg-none">—</span></td>
+            <td class="col-prs"><span class="pr-none">—</span></td>
+            <td class="col-commit"><span class="commit-time is-stale">14d ago</span></td>
+            <td class="col-stale"><span class="stale-zero">—</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="annotation">
+      <svg class="annotation-icon" width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v3M8 10.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <div>
+        <strong>How it works:</strong> Matches the existing PR expansion pattern — click badge to toggle.
+        Collapsed by default to keep table compact. Badge highlights when expanded.
+        <div class="pros-cons">
+          <ul class="pro">
+            <li>Cleanest default view — no extra rows until needed</li>
+            <li>Consistent with existing PR detail expansion UX</li>
+            <li>j/k skips worktree details (optional: Enter to expand)</li>
+          </ul>
+          <ul class="con">
+            <li>Requires click to see worktree status</li>
+            <li>Dirty worktrees not immediately visible</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       OPTION C — Inline compact chips
+       ================================================================ -->
+  <div class="option-section">
+    <div class="option-label">
+      <span class="option-letter">C</span>
+      <span class="option-title">Inline Compact Chips</span>
+    </div>
+    <p class="option-desc">
+      Worktrees shown as small chip tags within the parent row's name cell. Each chip shows the branch name
+      and a status dot. No extra rows at all — most information-dense option.
+    </p>
+    <div class="demo-table-wrap">
+      <table class="demo">
+        <thead>
+          <tr>
+            <th class="col-repo">Repo</th>
+            <th class="col-branch">Branch</th>
+            <th class="col-status">Status</th>
+            <th class="col-changes">Changes</th>
+            <th class="col-prs">PRs</th>
+            <th class="col-commit">Last Commit</th>
+            <th class="col-stale">Stale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="cat-hdr">
+            <td colspan="7">
+              <span class="cat-label">
+                <svg class="cat-chevron" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                utilities
+                <span class="cat-count">8</span>
+              </span>
+            </td>
+          </tr>
+
+          <!-- athena with inline chip -->
+          <tr class="repo">
+            <td class="col-repo repo-name-c">
+              <div class="repo-name">athena-usage-monitor-fastapi</div>
+              <div class="wt-chips">
+                <span class="wt-chip"><span class="wt-chip-dot is-dirty"></span><span class="wt-chip-branch">feat/dev-persona-auth</span></span>
+              </div>
+            </td>
+            <td class="col-branch"><span class="branch is-default">main</span></td>
+            <td class="col-status"><span class="status is-clean"><span class="sdot"></span>Clean</span></td>
+            <td class="col-changes"><span class="chg-none">—</span></td>
+            <td class="col-prs"><span class="pr-none">—</span></td>
+            <td class="col-commit"><span class="commit-time">3d ago</span></td>
+            <td class="col-stale"><span class="stale-zero">—</span></td>
+          </tr>
+
+          <!-- data-platform-assistant — normal -->
+          <tr class="repo">
+            <td class="col-repo"><span class="repo-name">data-platform-assistant</span></td>
+            <td class="col-branch"><span class="branch is-default">main</span></td>
+            <td class="col-status"><span class="status is-dirty"><span class="sdot"></span>Dirty</span></td>
+            <td class="col-changes"><span class="chg-ins">+12</span> <span class="chg-del">-3</span></td>
+            <td class="col-prs"><span class="pr-pill">2 PRs</span></td>
+            <td class="col-commit"><span class="commit-time">1h ago</span></td>
+            <td class="col-stale"><span class="stale-some">2</span></td>
+          </tr>
+
+          <!-- docs-site with inline chip -->
+          <tr class="repo">
+            <td class="col-repo repo-name-c">
+              <div class="repo-name">docs-site</div>
+              <div class="wt-chips">
+                <span class="wt-chip"><span class="wt-chip-dot is-ahead"></span><span class="wt-chip-branch">feature/shared-markdown-module</span></span>
+              </div>
+            </td>
+            <td class="col-branch"><span class="branch is-default">main</span></td>
+            <td class="col-status"><span class="status is-clean"><span class="sdot"></span>Clean</span></td>
+            <td class="col-changes"><span class="chg-none">—</span></td>
+            <td class="col-prs"><span class="pr-none">—</span></td>
+            <td class="col-commit"><span class="commit-time">5d ago</span></td>
+            <td class="col-stale"><span class="stale-zero">—</span></td>
+          </tr>
+
+          <!-- epcvip-tools-hub with inline chip -->
+          <tr class="repo">
+            <td class="col-repo repo-name-c">
+              <div class="repo-name">epcvip-tools-hub</div>
+              <div class="wt-chips">
+                <span class="wt-chip"><span class="wt-chip-dot is-dirty"></span><span class="wt-chip-branch">feature/epc-markdown-module</span></span>
+              </div>
+            </td>
+            <td class="col-branch"><span class="branch is-default">main</span></td>
+            <td class="col-status"><span class="status is-clean"><span class="sdot"></span>Clean</span></td>
+            <td class="col-changes"><span class="chg-none">—</span></td>
+            <td class="col-prs"><span class="pr-none">—</span></td>
+            <td class="col-commit"><span class="commit-time">1d ago</span></td>
+            <td class="col-stale"><span class="stale-zero">—</span></td>
+          </tr>
+
+          <!-- experiments-dashboard with inline chip -->
+          <tr class="repo">
+            <td class="col-repo repo-name-c">
+              <div class="repo-name">experiments-dashboard</div>
+              <div class="wt-chips">
+                <span class="wt-chip"><span class="wt-chip-dot is-clean"></span><span class="wt-chip-branch">feature/shared-markdown-module</span></span>
+              </div>
+            </td>
+            <td class="col-branch"><span class="branch is-default">main</span></td>
+            <td class="col-status"><span class="status is-clean"><span class="sdot"></span>Clean</span></td>
+            <td class="col-changes"><span class="chg-none">—</span></td>
+            <td class="col-prs"><span class="pr-pill">1 PR</span></td>
+            <td class="col-commit"><span class="commit-time">2d ago</span></td>
+            <td class="col-stale"><span class="stale-some">1</span></td>
+          </tr>
+
+          <!-- ping-tree-compare — normal -->
+          <tr class="repo">
+            <td class="col-repo"><span class="repo-name">ping-tree-compare</span></td>
+            <td class="col-branch"><span class="branch is-default">main</span></td>
+            <td class="col-status"><span class="status is-clean"><span class="sdot"></span>Clean</span></td>
+            <td class="col-changes"><span class="chg-none">—</span></td>
+            <td class="col-prs"><span class="pr-none">—</span></td>
+            <td class="col-commit"><span class="commit-time is-stale">14d ago</span></td>
+            <td class="col-stale"><span class="stale-zero">—</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="annotation">
+      <svg class="annotation-icon" width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v3M8 10.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <div>
+        <strong>How it works:</strong> Most compact — worktrees are inline within the parent row.
+        Status dot shows health at a glance. Branch name gives context. No vertical space added.
+        <div class="pros-cons">
+          <ul class="pro">
+            <li>Zero vertical space overhead — table stays compact</li>
+            <li>Status dot gives instant dirty/clean signal</li>
+            <li>j/k navigation unchanged — worktrees aren't rows</li>
+          </ul>
+          <ul class="con">
+            <li>Loses per-worktree detail (changes, commit time, PRs)</li>
+            <li>Long branch names may truncate in narrow columns</li>
+            <li>Row height varies (taller for repos with worktrees)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Option B accordion toggle
+  function toggleWtDetail(id) {
+    const row = document.querySelector(`tr[data-wt-for="${id}"]`);
+    if (row) row.classList.toggle('is-expanded');
+  }
+</script>
+
+</body>
+</html>

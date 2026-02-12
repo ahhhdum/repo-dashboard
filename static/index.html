@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EPCVIP Repo Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <h1 class="header-title">Repo Dashboard</h1>
+        <span class="header-subtitle">EPCVIP</span>
+      </div>
+      <div class="header-stats" id="headerStats">
+        <!-- Filled by JS -->
+      </div>
+      <div class="header-actions">
+        <span class="scan-time" id="scanTime"></span>
+        <button class="btn btn-primary" id="rescanBtn" onclick="triggerRescan()">
+          <svg class="btn-icon" viewBox="0 0 16 16" fill="none">
+            <path d="M13.65 2.35A8 8 0 1 0 16 8h-2a6 6 0 1 1-1.76-4.24L10 6h6V0l-2.35 2.35z" fill="currentColor"/>
+          </svg>
+          Rescan
+        </button>
+      </div>
+    </header>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <select class="filter-select" id="categoryFilter" onchange="applyFilters()">
+          <option value="">All Categories</option>
+          <option value="tools">Tools</option>
+          <option value="utilities">Utilities</option>
+          <option value="docs">Docs</option>
+          <option value="projects">Projects</option>
+          <option value="templates">Templates</option>
+          <option value="other">Other</option>
+        </select>
+        <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+          <option value="">All Status</option>
+          <option value="dirty">Dirty</option>
+          <option value="clean">Clean</option>
+          <option value="behind">Behind</option>
+          <option value="ahead">Ahead</option>
+        </select>
+        <label class="filter-toggle" for="groupByFolderToggle">
+          <input type="checkbox" id="groupByFolderToggle" onchange="toggleGroupByFolder()">
+          <span>Group by folder</span>
+        </label>
+        <label class="filter-toggle" for="inactiveFilterToggle">
+          <input type="checkbox" id="inactiveFilterToggle" onchange="toggleInactiveFilter()">
+          <span>Hide inactive</span>
+        </label>
+        <select class="filter-select" id="inactiveDaysFilter" onchange="setInactiveDays()">
+          <option value="7">Inactive &gt;7d</option>
+          <option value="14">Inactive &gt;14d</option>
+          <option value="30">Inactive &gt;30d</option>
+          <option value="60">Inactive &gt;60d</option>
+          <option value="90">Inactive &gt;90d</option>
+        </select>
+        <label class="filter-toggle" for="dirtyActiveToggle">
+          <input type="checkbox" id="dirtyActiveToggle" onchange="toggleDirtyAsActive()">
+          <span>Dirty counts active</span>
+        </label>
+      </div>
+      <div class="filter-search">
+        <svg class="search-icon" viewBox="0 0 16 16" fill="none">
+          <path d="M11.5 11.5L15 15M7 13A6 6 0 1 0 7 1a6 6 0 0 0 0 12z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input type="text" class="search-input" id="searchInput" placeholder="Filter repos…" oninput="applyFilters()">
+        <kbd class="search-kbd">/</kbd>
+      </div>
+      <div class="filter-counts" id="filterCounts"></div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container" id="tableContainer">
+      <table class="repo-table">
+        <thead>
+          <tr>
+            <th class="col-repo">Repo</th>
+            <th class="col-branch">Branch</th>
+            <th class="col-status">Status</th>
+            <th class="col-changes">Changes</th>
+            <th class="col-prs">PRs</th>
+            <th class="col-commit">
+              <button class="sort-btn" id="lastCommitSortBtn" type="button" onclick="toggleCommitSort()">
+                Last Commit
+                <span class="sort-indicator" id="lastCommitSortIndicator"></span>
+              </button>
+            </th>
+            <th class="col-stale">Stale</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <!-- Filled by JS -->
+        </tbody>
+      </table>
+      <div class="empty-state hidden" id="emptyState">
+        <p>No repos match your filters</p>
+      </div>
+      <div class="loading-state" id="loadingState">
+        <div class="loading-spinner"></div>
+        <p>Scanning repositories…</p>
+      </div>
+    </div>
+
+    <!-- Keyboard help -->
+    <div class="keyboard-help hidden" id="keyboardHelp">
+      <div class="keyboard-help-inner">
+        <div class="keyboard-help-header">
+          <h3>Keyboard Shortcuts</h3>
+          <button class="btn-close" onclick="toggleHelp()">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
+          </button>
+        </div>
+        <div class="shortcut-grid">
+          <div class="shortcut"><kbd>j</kbd><span>Next repo</span></div>
+          <div class="shortcut"><kbd>k</kbd><span>Previous repo</span></div>
+          <div class="shortcut"><kbd>Enter</kbd><span>Toggle PR detail</span></div>
+          <div class="shortcut"><kbd>o</kbd><span>Open in GitHub</span></div>
+          <div class="shortcut"><kbd>r</kbd><span>Rescan now</span></div>
+          <div class="shortcut"><kbd>/</kbd><span>Focus search</span></div>
+          <div class="shortcut"><kbd>Esc</kbd><span>Clear / Close</span></div>
+          <div class="shortcut"><kbd>?</kbd><span>Toggle help</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast hidden" id="toast"></div>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
