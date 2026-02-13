@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import re
-import subprocess
 import time
 from datetime import datetime
 from pathlib import Path

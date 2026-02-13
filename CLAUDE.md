@@ -16,6 +16,11 @@ python3 -m venv venv
 ./venv/bin/pip install -r requirements.txt
 ```
 
+For development tooling:
+```bash
+./venv/bin/pip install -r requirements-dev.txt
+```
+
 ## What This Does
 
 - Discovers all git repos under `~/repos-epcvip/` (currently 37)
@@ -69,6 +74,15 @@ FastAPI (8421) → scanner.py (git subprocess) → all repos
 ## Port
 
 8421 (registered in `~/.dev-ports.json`, adjacent to ccs at 8420)
+
+## Quality Checks
+
+Run before committing:
+
+```bash
+./venv/bin/python -m ruff check .
+./venv/bin/python -m pytest -q
+```
 
 ## Related
 
